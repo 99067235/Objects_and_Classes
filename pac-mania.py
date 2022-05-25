@@ -20,4 +20,3 @@ class pacPerson:
 pacMan = pacPerson(3,10, "1,1,1")
 pinky = ghosts("pink", "follow", "0,0,0", "5")
 blinky = ghosts("blue", "wander", "1,0,0", "7")
-print(pacMan.lives)
