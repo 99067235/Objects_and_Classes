@@ -400,6 +400,13 @@ class RobotArm:
   def inspectYard(self):
     print(self._yard)
 
+  def moveRightTimes(self,times:int):
+    for i in range(times):
+      self.moveRight()
+  
+  def moveLeftTimes(self,times:int):
+    for i in range(times):
+      self.moveLeft()
 
 ########### EVENT HANDLING ###########
 
