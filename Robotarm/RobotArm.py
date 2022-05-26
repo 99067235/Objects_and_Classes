@@ -1,3 +1,4 @@
+from asyncio import current_task
 import pygame # install in terminal with: pip install pygame
 import sys
 import random
@@ -407,7 +408,86 @@ class RobotArm:
   def moveLeftTimes(self,times:int):
     for i in range(times):
       self.moveLeft()
+  
+  def moveTo(self, position):
+    while True:
+      if self._stack > position - 1:
+        if self._stack > 0:
+          self._animate('left')
+          self._stack -= 1
+        else:
+          break
+      elif self._stack < position - 1:
+        if self._stack < self._maxStacks - 1:
+          self._animate('right')
+          self._stack += 1
+        else:
+          break
+      else:
+        break
+  
+  def getStackSize(self, position: int = 1):
+    print(len(self._yard[self._stack]))
 
+  def moveStackTo(self, position: int):
+    currStack = self._stack
+    currStackSize = len(self._yard[self._stack])
+    if position-currStack < 0:
+      amountMovesLeft = currStack - position - 1
+      for i in range(currStackSize):
+        self.grab()
+        self.moveLeftTimes(amountMovesLeft)
+        self.drop()
+        self.moveRightTimes(amountMovesLeft)
+    elif position-currStack > 0:
+      amountMovesLeft = position - currStack - 1
+      for i in range(currStackSize):
+        self.grab()
+        self.moveRightTimes(amountMovesLeft)
+        self.drop()
+        self.moveLeftTimes(amountMovesLeft)
+    else:
+      pass
+  def getNextColorRight(self, color : str):
+    amountOfStacks = 10 - self._stack
+    for i in range(amountOfStacks):
+      self.grab()
+      scanColor = self.scan()
+      if amountOfStacks == 1:
+        for i in range(10):
+          self.moveLeft()
+          self.wait()
+      elif color == scanColor:
+        return True
+      elif color != scanColor:
+        self.drop()
+        self.moveRight()
+        self.getNextColorRight(color)
+    return False
+
+  def getNextColorLeft(self, color : str):
+    amountOfStacks = 10 - self._stack
+    for i in range(amountOfStacks):
+      self.grab()
+      scanColor = self.scan()
+      if amountOfStacks == 10:
+        self.drop()
+        for i in range(10):
+          self.moveRight()
+          self.wait()
+      elif color == scanColor:
+        return True
+      elif color != scanColor:
+        self.drop()
+        self.moveLeft()
+        self.getNextColorLeft(color)
+    return False
+
+  def position(self):
+    return self._stack
+
+  def _position(self):
+    currentPosition = self._stack
 ########### EVENT HANDLING ###########
 
   def checkCloseEvent(self,event):
